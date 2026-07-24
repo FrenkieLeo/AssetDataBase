@@ -1,0 +1,1 @@
+event_id,event_date,asset_id,event_type,from_department,to_department,from_owner,to_owner,from_location,to_location,amount,currency,handler,document_ref,notes,created_at

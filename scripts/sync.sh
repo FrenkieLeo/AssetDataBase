@@ -27,6 +27,5 @@ if git "${GIT_ARGS[@]}" diff --cached --quiet; then
   echo "No local changes to sync."
 else
   git "${GIT_ARGS[@]}" commit -m "Update asset database"
+  git "${GIT_ARGS[@]}" push origin main
 fi
-
-git "${GIT_ARGS[@]}" push origin main

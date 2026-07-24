@@ -2,25 +2,31 @@
 set -euo pipefail
 
 REMOTE_URL="${ASSET_DB_REMOTE_URL:-https://github.com/FrenkieLeo/AssetDataBase.git}"
+GIT_ARGS=()
 
-if [ ! -d .git ] || [ ! -f .git/HEAD ]; then
+if [ -f .git/HEAD ]; then
+  GIT_ARGS=()
+elif [ -d .assetdb.git ]; then
+  GIT_ARGS=(--git-dir=.assetdb.git --work-tree=.)
+else
   echo "This directory is not a writable git checkout."
-  echo "Clone the repository first:"
+  echo "Clone the repository first, or initialize the Work Mode helper git dir:"
   echo "  git clone ${REMOTE_URL}"
+  echo "  git init --bare .assetdb.git"
   exit 1
 fi
 
-if ! git remote get-url origin >/dev/null 2>&1; then
-  git remote add origin "${REMOTE_URL}"
+if ! git "${GIT_ARGS[@]}" remote get-url origin >/dev/null 2>&1; then
+  git "${GIT_ARGS[@]}" remote add origin "${REMOTE_URL}"
 fi
 
-git pull --rebase origin main
-git add README.md data docs templates scripts
+git "${GIT_ARGS[@]}" pull --rebase origin main
+git "${GIT_ARGS[@]}" add README.md data docs templates scripts .gitignore
 
-if git diff --cached --quiet; then
+if git "${GIT_ARGS[@]}" diff --cached --quiet; then
   echo "No local changes to sync."
 else
-  git commit -m "Update asset database"
+  git "${GIT_ARGS[@]}" commit -m "Update asset database"
 fi
 
-git push origin main
+git "${GIT_ARGS[@]}" push origin main
